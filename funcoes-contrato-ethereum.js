@@ -1,25 +1,30 @@
-async function getRentalContractData() {
+async function obterDadosDoContrato() {
     let contractNumberField = document.getElementById("contractNumber");
     const userInput = contractNumberField.value * 1;
     alert("valorInformadoPeloUsuario: " + userInput);
     try {
-      const arrayRentalData = await smartContract.rentals(userInput);
-      console.log(arrayRentalData);
-      //Modo mais verboso
-      let showLocator = document.getElementById("locator");
-      showLocator.innerText = arrayRentalData[0];
-      //Modo sintetico onde se concatena um comando junto a outro na mesma linha
-      document.getElementById("renter").innerText = arrayRentalData[1];
-      document.getElementById("addressHome").innerText = arrayRentalData[2];
-      document.getElementById("rentalValue").innerText = arrayRentalData[3];
+      const arrayDadosDoContrato = await smartContract.auditorias(userInput);
+      console.log(arrayDadosDoContrato);
+      document.getElementById("nomeDaEmpresa").innerText = arrayDadosDoContrato[0];
+      document.getElementById("nomeDoEscritorio").innerText = arrayDadosDoContrato[1];
+      document.getElementById("periodoDeApuracao").innerText = arrayDadosDoContrato[2];
+      document.getElementById("processosAtivos").innerText = arrayDadosDoContrato[3];
+      document.getElementById("valorRemoto").innerText = arrayDadosDoContrato[4];
+      document.getElementById("valorPossivel").innerText = arrayDadosDoContrato[5];
+      document.getElementById("valorProvavel").innerText = arrayDadosDoContrato[6];
+      document.getElementById("valorTotal").innerText = arrayDadosDoContrato[7];
     } catch (err) {
       console.error(err);
-      document.getElementById("locator").innerText = "";
-      document.getElementById("renter").innerText = "";
-      document.getElementById("addressHome").innerText = "";
-      document.getElementById("rentalValue").innerText = "";
+      document.getElementById("nomeDaEmpresa").innerText = "";
+      document.getElementById("nomeDoEscritorio").innerText = "";
+      document.getElementById("periodoDeApuracao").innerText = "";
+      document.getElementById("processosAtivos").innerText = "";
+      document.getElementById("valorRemoto").innerText = "";
+      document.getElementById("valorPossivel").innerText = "";
+      document.getElementById("valorProvavel").innerText = "";
+      document.getElementById("valorTotal").innerText = "";
       contractNumberField.value = 0;
-      alert("Houve um erro ao buscar o contrato de numero: " + userInput);
+      alert("Ops! Identificamos um erro ao buscar ao resultado da auditoria de numero: " + userInput);
     }
   }
   
@@ -30,7 +35,7 @@ async function getRentalContractData() {
       document.getElementById("spanOwner").innerText = contractOwner;
     } catch (err) {
       console.error(err);
-      alert("Houve um erro ao buscar o proprietário do contrato");
+      alert("Atencao! Erro ao buscar o proprietario do contrato");
     }
   }
   
@@ -38,23 +43,27 @@ async function getRentalContractData() {
     try {
       var tx;
       var txReceipt;
-      tx = await smartContractWithSigner.registerRental(
-        document.frmImovel.paramLocator.value,
-        document.frmImovel.paramRenter.value,
-        document.frmImovel.paramAddressHome.value,
-        document.frmImovel.paramRentalValue.value
+      tx = await smartContractWithSigner.registrarContingencias(
+        document.frmAuditoria.paramNomeDaEmpresa.value,
+        document.frmAuditoria.paramNomeDoEscritorio.value,
+        document.frmAuditoria.paramPeriodoDeApuracao.value,
+        document.frmAuditoria.paramProcessosAtivos.value,
+        document.frmAuditoria.paramValorRemoto.value,
+        document.frmAuditoria.paramValorPossivel.value,
+        document.frmAuditoria.paramValorProvavel.value,
+        document.frmAuditoria.paramValorTotal.value
       );
-      console.log("transacao enviada ao metamask. pendente...", tx);
-      alert("Transação enviada... " + tx.hash + " aguarde a confirmação da Blockcnain...");
+      console.log("transacao enviada ao metamask...Aguarde", tx);
+      alert("Transação enviada..." + tx.hash + " Aguarde a confirmação da Blockchain...");
       txReceipt = await tx.wait();
       console.log("transacao processada...", txReceipt);
       if (txReceipt.status == 1) {
         alert("Transação processada: " + tx.hash + "  - Registro salvo na Blockchain. Status: " + txReceipt.status);
       } else {
-        alert("Transação processada: " + tx.hash + "  - Mas houve um erro na blockchain. Veja pelo etherscan");
+        alert("Transação processada: " + tx.hash + "  - Atencao! Houve um erro... Verifique através do Etherscan");
       }
     } catch (err) {
       console.error(err);
-      alert("Houve um erro ao salvar o registro do contrato de aluguel");
+      alert("Houve um erro ao registrar o resultado da auditoria");
     }
   }
